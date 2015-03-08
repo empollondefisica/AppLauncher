@@ -94,7 +94,7 @@ public class App
     
     public void editApp()
     {
-        Stage editStage = new Stage();
+        final Stage editStage = new Stage();
         Group group = new Group();
         Scene scene = new Scene( group, WIDTH, HEIGHT );
         GridPane gridPane = new GridPane();
@@ -111,6 +111,27 @@ public class App
         TextField nameField = new TextField();
         TextField commandField = new TextField();
         TextArea descriptionTextArea = new TextArea();
+        
+        cancelButton.setOnAction( new EventHandler<ActionEvent>()
+        {
+            public void handle( ActionEvent actionEvent )
+            {
+                editStage.close();
+            }
+        } );
+        
+        okButton.setOnAction( new EventHandler<ActionEvent>()
+        {
+            public void handle( ActionEvent actionEvent )
+            {
+                System.out.println( "Name:        " + Name );
+                System.out.println( "Command:     " + Command );
+                System.out.println( "Description: " + Description );
+                
+                editStage.close();
+            }
+        } );
+        
         descriptionTextArea.setPrefSize( 200, 100 );
         
         gridPane.add( nameLabel, 0, 0 );
