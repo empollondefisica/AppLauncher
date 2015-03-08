@@ -105,6 +105,9 @@ public class App
         
         Button iconButton = new Button( "Icon" );
         
+        Button cancelButton = new Button( "Cancel" );
+        Button okButton = new Button( "Ok" );
+        
         TextField nameField = new TextField();
         TextField commandField = new TextField();
         TextArea descriptionTextArea = new TextArea();
@@ -117,6 +120,8 @@ public class App
         gridPane.add( nameField, 1, 0 );
         gridPane.add( commandField, 1, 1 );
         gridPane.add( descriptionTextArea, 0, 3, 3, 1 );
+        gridPane.add( cancelButton, 0, 4 );
+        gridPane.add( okButton, 1, 4 );
         
         group.getChildren().add( gridPane );
         editStage.setScene( scene );
