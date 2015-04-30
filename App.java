@@ -11,6 +11,8 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.Tooltip;
+import javafx.stage.FileChooser;
 import javafx.event.EventHandler;
 import javafx.event.ActionEvent;
 import javafx.beans.property.SimpleStringProperty;
@@ -18,36 +20,28 @@ import javafx.beans.property.SimpleStringProperty;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.IOException;
+import java.io.File;
 
 public class App
 {
-    /**
-     *  oName
-     *  Path to Executable
-     *  Executable
-     *  
-     * 
-     *  Button
-     *  Edit Form
-     *  New Form
-     */
-     
     private SimpleStringProperty oName;
     private SimpleStringProperty oCommand;
     private ImageView oImageView;
     private Image oIcon;
     private SimpleStringProperty oDescription;
+    private Tooltip oTooltip;
+    private Button MyButton;
     
     private static final double HEIGHT = 200;
     private static final double WIDTH = 300;
-    
-    private Button MyButton;
     
     public App( String name, Image icon, String command )
     {
         oName = new SimpleStringProperty();
         oCommand = new SimpleStringProperty();
         oDescription = new SimpleStringProperty();
+        oImageView = new ImageView();
+        oTooltip = new Tooltip();
         
         if( name == null || name.equals( "" ) )
         {
@@ -89,10 +83,14 @@ public class App
         } );
         MenuItem deleteMenuItem = new MenuItem( "Delete" );
         
+        oTooltip.textProperty().bind( oDescription );
+        
         contextMenu.getItems().add( editMenuItem );
         contextMenu.getItems().add( deleteMenuItem );
         
         MyButton.setContextMenu( contextMenu );
+        MyButton.setTooltip( oTooltip );
+        MyButton.setGraphic( oImageView );
     }
     
     public Button getButton()
@@ -111,7 +109,8 @@ public class App
         Label commandLabel = new Label( "Command" );
         Label descriptionLabel = new Label( "Description" );
         
-        Button iconButton = new Button( "Icon" );
+        ImageView imageView = new ImageView();
+        Button imageButton = new Button( "Icon" );
         
         Button cancelButton = new Button( "Cancel" );
         Button okButton = new Button( "Ok" );
@@ -120,11 +119,35 @@ public class App
         TextField commandField = new TextField();
         TextArea descriptionTextArea = new TextArea();
         
-        
         nameField.setText( oName.getValue() );
         commandField.setText( oCommand.getValue() );
         descriptionTextArea.setText( oDescription.getValue() );
         descriptionTextArea.setWrapText( true );
+        
+        imageButton.setGraphic( imageView );
+        imageButton.setOnAction( new EventHandler<ActionEvent>()
+        {
+            public void handle( ActionEvent actionEvent )
+            {
+                Image image;
+                FileChooser fileChooser = new FileChooser();
+                fileChooser.setTitle( "Select an image" );
+                fileChooser.getExtensionFilters().addAll(
+                    new FileChooser.ExtensionFilter( "JPG", "*.jpg", "*.JPG", "*.jpeg", "*.JPEG" ),
+                    new FileChooser.ExtensionFilter( "PNG", "*.png", "*.PNG" ),
+                    new FileChooser.ExtensionFilter( "GIF", "*.gif", "*.GIF" ) );
+                fileChooser.setInitialDirectory( new File( System.getProperty( "user.home" ) ) );
+                File imageFile = fileChooser.showOpenDialog( editStage );
+                
+                if( imageFile != null )
+                {
+                    System.out.println( imageFile.getAbsolutePath() );
+                    image = new Image( "file:/" + imageFile.getAbsolutePath() );
+                    imageView.setImage( image );
+                    imageButton.setGraphic( imageView );
+                }
+            }
+        } );
         
         cancelButton.setOnAction( new EventHandler<ActionEvent>()
         {
@@ -151,7 +174,7 @@ public class App
         gridPane.add( nameLabel, 0, 0 );
         gridPane.add( commandLabel, 0, 1 );
         gridPane.add( descriptionLabel, 0, 2 );
-        gridPane.add( iconButton, 3, 0, 1, 2 );
+        gridPane.add( imageButton, 3, 0, 1, 2 );
         gridPane.add( nameField, 1, 0 );
         gridPane.add( commandField, 1, 1 );
         gridPane.add( descriptionTextArea, 0, 3, 3, 1 );
