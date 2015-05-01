@@ -16,6 +16,7 @@ import javafx.stage.FileChooser;
 import javafx.event.EventHandler;
 import javafx.event.ActionEvent;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.geometry.Rectangle2D;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -26,22 +27,29 @@ public class App
 {
     private SimpleStringProperty oName;
     private SimpleStringProperty oCommand;
-    private ImageView oImageView;
-    private Image oIcon;
     private SimpleStringProperty oDescription;
-    private Tooltip oTooltip;
-    private Button MyButton;
+    
+    private ImageView            oImageView;
+    private Image                oIcon;
+    private Tooltip              oTooltip;
+    private Button               oButton;
     
     private static final double HEIGHT = 200;
-    private static final double WIDTH = 300;
+    private static final double WIDTH  = 300;
     
     public App( String name, Image icon, String command )
     {
-        oName = new SimpleStringProperty();
-        oCommand = new SimpleStringProperty();
+        oName        = new SimpleStringProperty();
+        oCommand     = new SimpleStringProperty();
         oDescription = new SimpleStringProperty();
-        oImageView = new ImageView();
-        oTooltip = new Tooltip();
+        oImageView   = new ImageView();
+        oTooltip     = new Tooltip();
+        oButton      = new Button();
+        oIcon        = icon;
+        
+        ContextMenu contextMenu = new ContextMenu();
+        MenuItem editMenuItem   = new MenuItem( "Edit..." );
+        MenuItem deleteMenuItem = new MenuItem( "Delete" );
         
         if( name == null || name.equals( "" ) )
         {
@@ -51,11 +59,11 @@ public class App
         {
             oName.setValue( name );
         }
-        oIcon = icon;
+        
         oCommand.setValue( command );
         
-        MyButton = new Button();
-        MyButton.setOnAction( new EventHandler<ActionEvent>()
+        oButton.textProperty().bind( oName );
+        oButton.setOnAction( new EventHandler<ActionEvent>()
         {
             public void handle( ActionEvent actionEvent )
             {
@@ -70,10 +78,7 @@ public class App
                 }
             }
         } );
-        MyButton.textProperty().bind( oName );
         
-        ContextMenu contextMenu = new ContextMenu();
-        MenuItem editMenuItem = new MenuItem( "Edit..." );
         editMenuItem.setOnAction( new EventHandler<ActionEvent>()
         {
             public void handle( ActionEvent actionEvent )
@@ -81,21 +86,22 @@ public class App
                 editApp();
             }
         } );
-        MenuItem deleteMenuItem = new MenuItem( "Delete" );
         
         oTooltip.textProperty().bind( oDescription );
         
         contextMenu.getItems().add( editMenuItem );
         contextMenu.getItems().add( deleteMenuItem );
         
-        MyButton.setContextMenu( contextMenu );
-        MyButton.setTooltip( oTooltip );
-        MyButton.setGraphic( oImageView );
+        oButton.setContextMenu( contextMenu );
+        oButton.setTooltip( oTooltip );
+        oButton.setGraphic( oImageView );
+        oButton.setPrefWidth( 150 );
+        oButton.setPrefHeight( 150 );
     }
     
     public Button getButton()
     {
-        return MyButton;
+        return oButton;
     }
     
     public void editApp()
@@ -109,7 +115,7 @@ public class App
         Label commandLabel = new Label( "Command" );
         Label descriptionLabel = new Label( "Description" );
         
-        ImageView imageView = new ImageView();
+        final ImageView imageView = new ImageView();
         Button imageButton = new Button( "Icon" );
         
         Button cancelButton = new Button( "Cancel" );
@@ -124,7 +130,13 @@ public class App
         descriptionTextArea.setText( oDescription.getValue() );
         descriptionTextArea.setWrapText( true );
         
+        imageView.setFitWidth( 100 );
+        imageView.setFitHeight( 100 );
+        
         imageButton.setGraphic( imageView );
+        imageButton.setPrefWidth( 150 );
+        imageButton.setPrefHeight( 150 );
+        imageButton.setTooltip( new Tooltip( "Select an image..." ) );
         imageButton.setOnAction( new EventHandler<ActionEvent>()
         {
             public void handle( ActionEvent actionEvent )
@@ -133,16 +145,14 @@ public class App
                 FileChooser fileChooser = new FileChooser();
                 fileChooser.setTitle( "Select an image" );
                 fileChooser.getExtensionFilters().addAll(
-                    new FileChooser.ExtensionFilter( "JPG", "*.jpg", "*.JPG", "*.jpeg", "*.JPEG" ),
-                    new FileChooser.ExtensionFilter( "PNG", "*.png", "*.PNG" ),
-                    new FileChooser.ExtensionFilter( "GIF", "*.gif", "*.GIF" ) );
+                    new FileChooser.ExtensionFilter(
+                        "Images", "*.jpg", "*.JPG", "*.jpeg","*.JPEG", "*.png", "*.PNG", "*.gif", "*.GIF" ) );
                 fileChooser.setInitialDirectory( new File( System.getProperty( "user.home" ) ) );
                 File imageFile = fileChooser.showOpenDialog( editStage );
                 
                 if( imageFile != null )
                 {
-                    System.out.println( imageFile.getAbsolutePath() );
-                    image = new Image( "file:/" + imageFile.getAbsolutePath() );
+                    image = new Image( "file:" + imageFile.getAbsolutePath() );
                     imageView.setImage( image );
                     imageButton.setGraphic( imageView );
                 }
@@ -174,7 +184,7 @@ public class App
         gridPane.add( nameLabel, 0, 0 );
         gridPane.add( commandLabel, 0, 1 );
         gridPane.add( descriptionLabel, 0, 2 );
-        gridPane.add( imageButton, 3, 0, 1, 2 );
+        gridPane.add( imageButton, 3, 0, 1, 4 );
         gridPane.add( nameField, 1, 0 );
         gridPane.add( commandField, 1, 1 );
         gridPane.add( descriptionTextArea, 0, 3, 3, 1 );
