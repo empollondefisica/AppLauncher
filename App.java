@@ -12,6 +12,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.Tooltip;
+import javafx.scene.control.ContentDisplay;
 import javafx.stage.FileChooser;
 import javafx.event.EventHandler;
 import javafx.event.ActionEvent;
@@ -34,8 +35,8 @@ public class App
     private Tooltip              oTooltip;
     private Button               oButton;
     
-    private static final double HEIGHT = 200;
-    private static final double WIDTH  = 300;
+    private static final double HEIGHT = 300;
+    private static final double WIDTH  = 500;
     
     public App( String name, Image icon, String command )
     {
@@ -92,9 +93,13 @@ public class App
         contextMenu.getItems().add( editMenuItem );
         contextMenu.getItems().add( deleteMenuItem );
         
+        oImageView.setFitWidth( 75 );
+        oImageView.setFitHeight( 75 );
+        
         oButton.setContextMenu( contextMenu );
         oButton.setTooltip( oTooltip );
         oButton.setGraphic( oImageView );
+        oButton.setContentDisplay( ContentDisplay.TOP );
         oButton.setPrefWidth( 150 );
         oButton.setPrefHeight( 150 );
     }
@@ -132,11 +137,13 @@ public class App
         
         imageView.setFitWidth( 100 );
         imageView.setFitHeight( 100 );
+        imageView.setImage( new Image( "file:resources/default.png" ) );
         
         imageButton.setGraphic( imageView );
         imageButton.setPrefWidth( 150 );
         imageButton.setPrefHeight( 150 );
         imageButton.setTooltip( new Tooltip( "Select an image..." ) );
+        imageButton.setContentDisplay( ContentDisplay.TOP );
         imageButton.setOnAction( new EventHandler<ActionEvent>()
         {
             public void handle( ActionEvent actionEvent )
@@ -174,6 +181,7 @@ public class App
                 oName.setValue( nameField.getText() );
                 oCommand.setValue( commandField.getText() );
                 oDescription.setValue( descriptionTextArea.getText() );
+                oImageView.setImage( imageView.getImage() );
                 
                 editStage.close();
             }
